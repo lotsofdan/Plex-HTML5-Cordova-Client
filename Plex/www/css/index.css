@@ -1,0 +1,241 @@
+/**
+    Theme Overrides
+*/
+.primary-color-dark {
+    background-color: #1a1a1a !important;
+}
+
+.navbar .form-control {
+    border: 0px;
+    background-color: #1f1f1f;
+}
+
+.card-block {
+    background-color: #1a1a1a;
+    color: #818a91;
+}
+
+h1 {
+    font-size: 16px;
+    color: #f9be03;
+    line-height: 28px;
+    font-weight: bold;
+    text-align: left;
+}
+
+/**
+     End Theme Overrides 
+*/
+* {
+    -webkit-tap-highlight-color: rgba(0,0,0,0);
+}
+
+.app_start {
+    display: block;
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 1;
+    opacity: 0.1;
+    background-image: url('/images/F3AlS3K.jpg');
+    background-repeat: no-repeat;
+    background-position: 50% 0;
+    -ms-background-size: cover;
+    -o-background-size: cover;
+    -moz-background-size: cover;
+    -webkit-background-size: cover;
+    background-size: cover;
+}
+
+.app_body {
+    background-color: #1f1f1f;
+}
+
+.app {
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    height: 50px;
+    width: 225px;
+    text-align: center;
+    padding: 0px 0px 0px 0px;
+    margin: -115px 0px 0px -112px;
+    z-index: 2;
+}
+
+.login_image {
+    width: 100px;
+    padding-bottom: 20px;
+}
+
+.select_override {
+    width: 200px;
+    display: inline-block;
+    margin: 0px;
+}
+
+.body_categories {
+    padding-top: 10px;
+    padding-bottom: 10px;
+}
+
+    .body_categories .form-control {
+        background-color: #1a1a1a;
+        border: 0px;
+    }
+
+img.center {
+    display: block;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+img.image_100 {
+    width: 100%;
+    height: 100%;
+}
+
+img.image_showcase {
+    position: relative;
+}
+
+.showcase div {
+    position: absolute;
+}
+
+.text_showcase_name {
+    background-color: rgba(0, 0, 0, 0.60);
+    color: #fff;
+    bottom: 10px;
+    left: 10px;
+    padding: 5px 10px;
+}
+
+.text_showcase_icon {
+    color: #fff;
+    bottom: 50%;
+    margin-bottom: -50px;
+    left: 50%;
+    margin-left: -50px;
+    border-radius: 50%;
+    font-size: 100px;
+    opacity: 0.4;
+}
+
+.text_showcase_rating {
+    background-color: rgba(0, 0, 0, 0.60);
+    color: #fff;
+    bottom: 45px;
+    left: 10px;
+    padding: 5px 10px;
+}
+
+.modal-content {
+    background-color: #222222;
+    color: #bfbfbf;
+}
+
+.modal_close {
+    position: absolute;
+    background-color: #000 !important;
+    padding: 10px !important;
+    z-index: 9;
+    opacity: 1;
+    color: #fff;
+}
+
+.modal-body {
+    position: relative;
+}
+
+.logged_in {
+    float: right;
+}
+
+    .logged_in img {
+        width: 35.5px;
+    }
+
+.row_no_padding > [class*="col-"] {
+    padding-left: 0 !important;
+    padding-right: 0 !important;
+}
+
+video::-webkit-media-controls-fullscreen-button {
+}
+
+@media screen and (min-aspect-ratio: 1/1) and (min-width:400px) {
+    .app {
+        background-position: left center;
+        padding: 75px 0px 75px 170px;
+        margin: -90px 0px 0px -198px;
+    }
+}
+
+.event {
+    border-radius: 4px;
+    -webkit-border-radius: 4px;
+    color: #FFFFFF;
+    font-size: 12px;
+    margin: 0px 30px;
+    padding: 2px 0px;
+}
+
+    .event.listening {
+        background-color: #333333;
+        display: block;
+    }
+
+    .event.received {
+        background-color: #4B946A;
+        display: none;
+    }
+
+@keyframes fade {
+    from {
+        opacity: 1.0;
+    }
+
+    50% {
+        opacity: 0.4;
+    }
+
+    to {
+        opacity: 1.0;
+    }
+}
+
+@-webkit-keyframes fade {
+    from {
+        opacity: 1.0;
+    }
+
+    50% {
+        opacity: 0.4;
+    }
+
+    to {
+        opacity: 1.0;
+    }
+}
+
+.blink {
+    animation: fade 3000ms infinite;
+    -webkit-animation: fade 3000ms infinite;
+}
+/* TEMPLATE STYLES */
+main {
+    margin-top: 0;
+}
+
+    main .card {
+        margin-bottom: 2rem;
+    }
+
+@media only screen and (max-width: 768px) {
+    .read-more {
+        text-align: center;
+    }
+}

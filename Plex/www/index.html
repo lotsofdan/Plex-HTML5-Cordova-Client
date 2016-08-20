@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <!--
+        Customize the content security policy in the meta tag below as needed. Add 'unsafe-inline' to default-src to enable inline JavaScript.
+        For details, see http://go.microsoft.com/fwlink/?LinkID=617521
+    -->
+    <meta http-equiv="Content-Security-Policy" content="
+          default-src *;
+          style-src * 'unsafe-inline' 'unsafe-eval' ;
+          script-src * 'unsafe-inline' 'unsafe-eval' ;
+          media-src *; img-src * data:;
+          " />
+    <meta name="format-detection" content="telephone=no">
+    <meta name="msapplication-tap-highlight" content="no">
+    <meta name="viewport" content="user-scalable=no, initial-scale=1, maximum-scale=1, minimum-scale=1, width=device-width">
+
+    <link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.6.3/css/font-awesome.min.css" rel="stylesheet" />
+    <link href="css/bootstrap.min.css" rel="stylesheet" />
+    <link href="css/mdb.min.css" rel="stylesheet" />
+    <link href="css/index.css" rel="stylesheet" />
+    <script src="http://localhost:3000/socket.io/socket.io.js"></script>
+    <script src="scripts/jquery-2.2.3.min.js"></script>
+    <script src="scripts/tether.min.js"></script>
+    <script src="scripts/bootstrap.min.js"></script>
+
+    <script>
+        //Run the node server from here first
+        //https://github.com/lotsofdan/Plex-HTML5-Cordova-Client
+        var login = { username: "YOURUSERNAME", password: "YOURPASSWORD" }
+        var socket = io.connect('http://localhost:3000');
+        socket.on('connected', function (data) {
+            if (data) {
+                socket.emit('login', login);
+                $(".received").html("Node Server Online")
+            }
+        });
+        socket.on('logged_in', function (data) {
+            var obj = $.parseJSON(data);
+            $(".received").html("Signed into Plex as:" + obj.user.username)
+            $(".app_body").css('opacity', 0).load("menu.html", function () {
+                $(this).animate({ opacity: 1 }, 'fast');
+                login.auth_token = obj.user.authToken
+                console.log(login)
+                socket.emit('servers', login.auth_token);
+                $(".logged_in").html('<img src="' + obj.user.thumb + '"/>')
+            });
+        });
+
+        socket.on('server_list', function (data) {
+            var sb = '<select class="form-control select_override">';
+            $.each(data.MediaContainer.Server, function (index, value) {
+                sb += '<option id="' + index + '" data-scheme="' + value.$.scheme + '" data-address="' + value.$.address + '" data-port="' + value.$.port + '" data-access_token="' + value.$.accessToken + '">' + value.$.name + '</option>'
+            });
+            sb += "</select>"
+            $(".server_container").html(sb)
+        })
+
+        socket.on('server_categories', function (data) {
+            var obj = $.parseJSON(data)
+            var sb = '<h1>Libraries<small class="text-muted"> - Sectiony Goodness</small></h1>' +
+                '<select class="form-control select_override">';
+            sb += '<option id="-1">On Deck</option>'
+            $.each(obj._children, function (index, value) {
+                sb += '<option>' + value.title + '</option>'
+            });
+            sb += "</select><div class='btn btn_library'>Go!</div>"
+            $(".body_categories").html(sb)
+        });
+        var selected_content = {}
+        socket.on('server_selected', function (data) {
+            console.log(data)
+            var obj = $.parseJSON(data.content)
+            selected_content = data;
+            var sb = '';
+            console.log(obj)
+            $(".body_container").slideUp(function () {
+                $.each(obj._children, function (index, value) {
+                    if (typeof (value.grandparentTitle) !== 'undefined') {
+                        value.title = value.grandparentTitle + " - " + value.title
+                    }
+                    var rating = '';
+                    if (typeof (value.rating) !== 'undefined') {
+                        rating = '<div class="text_showcase_rating"><i class="fa fa-star" aria-hidden="true"></i> ' + value.rating + '</div>';
+                    }
+                    sb += '<div class="row row_no_padding"><div class="col-xs-12 showcase showcase_pop" data-array_key="' + index + '" data-server="' + data.server_string + '" data-access_token="' + data.access_token + '"><img class="image_showcase image_100" src="' + data.server_string + "/photo/:/transcode?url=" + data.server_string + value.art + '&width=500&height=500&X-Plex-Token=' + data.access_token + '"/><div class="text_showcase_name">' + value.title + '</div>' + rating + '<div class="text_showcase_icon"><i class="fa fa-play-circle-o" aria-hidden="true"></i></div></div></div>'
+                });
+                $(this).html(sb).slideDown();
+            })
+        })
+
+        $(document).on("click", ".showcase_pop", function () {
+            console.log("we want data from array key" + $(this).data("array_key"))
+            var obj = $.parseJSON(selected_content.content)
+            var offst = obj._children[$(this).data("array_key")].duration - obj._children[$(this).data("array_key")].viewOffset
+            var videoURL = selected_content.server_string + '/video/:/transcode/universal/start?hasMDE=1&path=http%3A%2F%2F127.0.0.1%3A32400' + obj._children[$(this).data("array_key")].key + '&mediaIndex=0&partIndex=0&protocol=http&offset=' + 0 + '&fastSeek=1&directPlay=0&directStream=1&subtitleSize=100&audioBoost=100&maxVideoBitrate=4000&videoQuality=100&videoResolution=1280x720&session=frpmgvzlc0mzqx8pct1h478pvi&subtitles=burn&copyts=1&Accept-Language=en-GB&X-Plex-Chunked=1&X-Plex-Product=Plex%20Web&X-Plex-Version=2.7.8&X-Plex-Client-Identifier=42d3570f-404a-4bf7-a2dd-1af7d5778d8e&X-Plex-Platform=Chrome&X-Plex-Platform-Version=52.0&X-Plex-Device=Windows&X-Plex-Device-Name=Plex%20Web%20%28Chrome%29&X-Plex-Device-Screen-Resolution=858x1246%2C2560x1440&X-Plex-Token=' + selected_content.access_token
+            $("#modal").modal("show")
+            var rating = "";
+            $(".modal_content").html('<div class="row"><div class="col-xs-12 showcase showcase_play" data-video_url="' + videoURL + '"><img class="image_showcase image_100" src="' + selected_content.server_string + "/photo/:/transcode?url=" + selected_content.server_string + obj._children[$(this).data("array_key")].art + '&width=500&height=500&X-Plex-Token=' + selected_content.access_token + '"/><div class="text_showcase_name">' + obj._children[$(this).data("array_key")].title + '</div>' + rating + '<div class="text_showcase_icon"><i class="fa fa-play-circle-o" aria-hidden="true"></i></div></div></div><div class="row"><div class="col-xs-6"><div class="btn btn-block btn-primary">Trailer</div></div><div class="col-xs-6"><div class="btn btn-block btn-primary">Download</div></div></div><div class="row"><div class="col-xs-12">' + obj._children[$(this).data("array_key")].summary + '</div></div>')
+        })
+        $(document).on("change", ".select_override", function () {
+            var change_server = { scheme: $(this).find(":selected").data("scheme"), address: $(this).find(":selected").data("address"), port: $(this).find(":selected").data("port"), access_token: $(this).find(":selected").data("access_token") }
+            console.log(change_server)
+            socket.emit('change_server', change_server);
+        })
+        $(document).on("click", ".showcase_play", function () {
+            console.log("play video from" + $(this).data("video_url"))
+            $(".modal_content").html('<div class="videoContainer"><video id="video" width="100%" autoplay controls="controls"><source src="' + $(this).data("video_url") + '"></video></div>')
+        })
+
+    </script>
+    <title>Dan Plex HTML5 Cordova Client</title>
+</head>
+<body class="app_body">
+    <div class="app">
+        <img class="center login_image" src="/images/plexlogo.png" />
+        <div id="deviceready" class="blink">
+            <p class="event listening">Connecting to Device</p>
+            <p class="event received">Device is Ready</p>
+        </div>
+    </div>
+    <div class="app_start"></div>
+    <script type="text/javascript" src="cordova.js"></script>
+    <script type="text/javascript" src="scripts/platformOverrides.js"></script>
+    <script type="text/javascript" src="scripts/index.js"></script>
+
+</body>
+</html>
